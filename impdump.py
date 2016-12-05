@@ -28,8 +28,9 @@ from framework.win32.dshashdump import get_syskey,ds_decrypt_pek,ds_decrypt_sing
 
 # manually decrypt a single hash
 def decUserHash(bootkey,rawPekKey,user,rawRID,rawLMhash,rawNTLMhash):
-
-    rid = int(rawRID[48:],16)
+    
+    # "rawRID" may already be the RID, or the full SID - if latter is true, truncate
+    rid = int(rawRID,16) if len(rawRID)==8 else int(rawRID[48:],16)
     
     encPEK = unhexlify(rawPekKey[16:])
     pek = ds_decrypt_pek(bootkey, encPEK)
@@ -67,7 +68,8 @@ def decUserHash(bootkey,rawPekKey,user,rawRID,rawLMhash,rawNTLMhash):
 # decrypt user hash histories
 def decUserHashHistory(bootkey, rawPekKey, user, rawRID, rawLMhashHistory, rawNTLMhashHistory):
 
-    rid = int(rawRID[48:],16)
+    # "rawRID" may already be the RID, or the full SID - if latter is true, truncate
+    rid = int(rawRID,16) if len(rawRID)==8 else int(rawRID[48:],16)
     
     encPEK = unhexlify(rawPekKey[16:])
     pek = ds_decrypt_pek(bootkey, encPEK)
